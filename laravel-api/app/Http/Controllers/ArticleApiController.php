@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+
 
 class ArticleApiController extends Controller
 {
 
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware('auth:sanctum')->except('index', 'show');
     }
 
     public function index() {
@@ -51,10 +53,14 @@ class ArticleApiController extends Controller
         return $article;
     }
 
-    public function destroy(Article $article) {
-        $article->delete();
-
-        return $article;
+    public function destroy($id) {
+        $article = Article::find($id);
+        if( Gate::allows('article-delete', $article) ) {
+            $article->delete();
+            return $article;
+        } else {
+            return response()->json("Unauthorize", 401);
+        }
     }
 
 }

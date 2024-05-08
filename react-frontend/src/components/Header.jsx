@@ -54,7 +54,6 @@ export default function Header() {
                 
                 <Box sx={{
                     display: "flex",
-                    // justifyContent: "center",
                     alignItems: "center"
                 }}>
                     {auth && (

@@ -4,7 +4,8 @@ import {
     Input,
     InputAdornment,
     IconButton,
-    Typography
+    Typography,
+    
 } from "@mui/material";
 
 import { Add as AddIcon} from "@mui/icons-material";
@@ -24,9 +25,13 @@ export default function Article() {
     const [ comments, setComments ] = useState([]);
     const [ hasUpdate, setHasUpdate ] = useState(false);
 
-    const remove = _id => {
+    const remove = id => {
         navigate("/");
     }
+
+    const commentRemove = id => {
+        setComments(comments.filter(comment => comment.id !== id));
+    };
 
     useEffect(() => {
         ( async () => {
@@ -66,19 +71,6 @@ export default function Article() {
         })();
     }, [id, hasUpdate]);
 
-    // useEffect(() => {
-    //     (async () => {
-    //         setIsLoading(true);
-
-    //         const api = "http://localhost:8000/api/articles";
-    //         const res = await fetch(`${api}/${id}`);
-    //         const data = await res.json();
-    //         setArticle(data);
-    //         setIsLoading(false);
-    //         setHasUpdate(false);
-    //     })();
-    // }, [hasUpdate]);
-
     return (
         <Box>
             {isLoading ? (
@@ -98,7 +90,7 @@ export default function Article() {
                                 <CommentCard
                                     key={comment.id}
                                     comment={comment}
-                                    remove={remove}
+                                    remove={commentRemove}
                                 />
                             );
                         })}

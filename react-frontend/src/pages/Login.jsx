@@ -64,22 +64,7 @@ export default function Login() {
                 setHasError(true);
                 setErrorMessage("Failed to verify user");
             });
-        //         .then(res => res.json())
-        //         .then(user => {
-        //             setAuth(true);
-        //             setAuthUser(user);
-        //             navigate("/")
-        //         } )
 
-        //     // if (userRes.ok) {
-        //     //     const user = await userRes.json();
-        //     //     setAuth(true);
-        //     //     setAuthUser(user);
-        //     //     navigate("/");
-        //     // } else {
-        //     //     setHasError(true);
-        //     //     setErrorMessage("Failed to verify user");
-        //     // }
         } catch (error) {
             console.error('Error logging in:', error);
             setHasError(true);

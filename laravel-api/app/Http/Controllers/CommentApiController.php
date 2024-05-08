@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+
 
 class CommentApiController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware('auth:sanctum')->except('index', 'show');
     }
 
 
@@ -53,10 +55,14 @@ class CommentApiController extends Controller
         return $comment;
     }
 
-    public function destroy(Comment $comment) {
-        $comment->delete();
-
-        return $comment;
+    public function destroy($id) {
+        $comment = Comment::find($id);
+        if( Gate::allows('comment-delete', $comment) ) {
+            $comment->delete();
+            return $comment;
+        } else {
+            return response()->json("Unauthorize", 401);
+        };
     }
 }
 

@@ -48,47 +48,7 @@ export default function Register() {
             setOpenFeedback(true);
             navigate("/login");
 
-            // const token = await res.text();
-            // localStorage.setItem("token", token);
-
-            // fetch("http://localhost:8000/api/verify", {
-            //     headers: {
-            //         'Authorization': `Bearer ${token}`,
-            //     },
-            // })
-
-            // .then(res => {
-            //     if (!res.ok) {
-            //         throw new Error('Failed to verify user');
-            //     }
-            //     return res.json();
-            // })
-            // .then(user => {
-            //     setAuth(true);
-            //     setAuthUser(user);
-            //     navigate("/");
-            // })
-            // .catch(error => {
-            //     console.error('Error verifying user:', error);
-            //     setHasError(true);
-            //     setErrorMessage("Failed to verify user");
-            // });
-        //         .then(res => res.json())
-        //         .then(user => {
-        //             setAuth(true);
-        //             setAuthUser(user);
-        //             navigate("/")
-        //         } )
-
-        //     // if (userRes.ok) {
-        //     //     const user = await userRes.json();
-        //     //     setAuth(true);
-        //     //     setAuthUser(user);
-        //     //     navigate("/");
-        //     // } else {
-        //     //     setHasError(true);
-        //     //     setErrorMessage("Failed to verify user");
-        //     // }
+            
         } catch (error) {
             console.error('Error logging in:', error);
             setHasError(true);

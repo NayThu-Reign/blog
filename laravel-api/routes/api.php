@@ -19,6 +19,11 @@ Route::apiResource('/users', UserApiController::class);
 Route::apiResource('/comments', CommentApiController::class);
 
 Route::get('/comments/article/{id}', [CommentApiController::class, 'index']);
+// Route::delete('/comments/{id}', [CommentApiController::class, 'destroy']);
+
+// Route::delete('/article/{id}', [CommentApiController::class, 'destroy']);
+
+Route::delete('/comments/delete/{id}', [CommentApiController::class, 'destroy']);
 
 
 Route::post("/login", function() {
@@ -68,23 +73,9 @@ Route::post("/users", function() {
 
 });
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+
 
 Route::middleware('auth:sanctum')->get('/verify', function (Request $request) {
     return $request->user();
 });
 
-// Route for user login
-// Route::post('/login', function(Request $request) {
-//     $credentials = $request->only('email', 'password');
-
-//     if (!Auth::attempt($credentials)) {
-//         return response()->json(['error' => 'Unauthorized'], 401);
-//     }
-
-//     $user = User::where('email', $request->email)->first();
-
-//     return $user->createToken('AuthToken')->plainTextToken;
-// });

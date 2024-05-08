@@ -9,11 +9,13 @@ import {
     Button,
     ListItemIcon,
     ListItemText,
+    Menu,
+    MenuItem,
 } from "@mui/material";
 
 import {
     MoreVert as MenuIcon,
-    Comment as CommentIcon,
+    // Comment as CommentIcon,
     Delete as DeleteIcon,
 } from "@mui/icons-material";
 
@@ -23,24 +25,23 @@ import { format } from "date-fns";
 
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
-
+import { useAuth } from "../providers/AuthProvider";
 
 
 
 export default function ArticleCard({article, 
-focus}) {
+focus, remove}) {
     const navigate = useNavigate();
+    const { authUser } = useAuth();
     const [ showMenu, setShowMenu ] = useState(false);
     const [ menuPosition, setMenuPosition ] = useState(null);
-    const [ category, setCategory ] = useState([]);
-    const [ user, setUser ] = useState([]);
+    const [ category, setCategory ] = useState(null);
+    const [ user, setUser ] = useState(null);
+    // const [ pagination, setPagination ] = useState(null);
+
 
     const {pathname} = useLocation();
 
-
-
-    
-// const token = "2|JYTBHnzySEPkwZKAPIf9GeuM5Dei0JgVhfQEdZ9O667657b1";
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -51,6 +52,7 @@ focus}) {
 
                 const data = await res.json();
                 setCategory(data.name);
+
             } catch (error) {
                 console.error('Error fetching category:', error);
                 setCategory(null);
@@ -65,6 +67,7 @@ focus}) {
 
                 const data = await res.json();
                 setUser(data.name);
+
             } catch (error) {
                 console.error('Error fetching User:', error);
                 setUser(null);
@@ -75,21 +78,7 @@ focus}) {
         fetchUser();
 
     }, [article.category_id, article.user_id]);
-    // const formatDate = (dateString) => {
-    //     try {
-    //         const date = new Date(dateString);
-    //         if (isNaN(date.getTime())) {
-    //             return "Invalid Date";
-    //         }
-    //         return format(date, "MMM d, y");
-    //     } catch (error) {
-    //         console.error("Error formatting date:", error);
-    //         return "Invalid Date";
-    //     }
-    // };
- 
     
-
 
     return (
         <Card
@@ -97,10 +86,62 @@ focus}) {
             sx={{ mb: 2, bgcolor: focus ?"article.background" : "transparent"}}
         >
             <CardContent>
-                <Box>
+                <Box 
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
                     <Typography variant="h5">
                         {article.title}
                     </Typography>
+                    {authUser && authUser.id === article.user_id && (
+                        <Box>
+                            <IconButton
+                                onClick={e => {
+                                    setShowMenu(true);
+                                    setMenuPosition(e.currentTarget)
+                                }}>
+                                <MenuIcon />
+                            </IconButton>
+                            <Menu
+                                anchorEl={menuPosition}
+                                open={showMenu}
+                                anchorOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                transformOrigin={{
+                                    vertical: "top",
+                                    horizontal: "right",
+                                }}
+                                onClose={() => {
+                                    setShowMenu(false);
+                                }}>
+                                <MenuItem
+                                    onClick={() => {
+                                        const api = "http://localhost:8000/api/articles";
+                                        const token = localStorage.getItem("token");
+
+                                        fetch(`${api}/${article.id}`, {
+                                            method: "DELETE",
+                                            headers: {
+                                                "Content-Type": "application/json",
+                                                Authorization: `Bearer ${token}`,
+                                            },
+                                        });
+
+                                        remove(article.id);
+                                    }}>
+                                    <ListItemIcon>
+                                        <DeleteIcon  color="error"/>
+                                    </ListItemIcon>
+                                    <ListItemText primary="Delete" />
+                                </MenuItem>
+                            </Menu>
+                        </Box>
+                    )}
                 </Box>
                 <Box
                     sx={{
@@ -132,7 +173,10 @@ focus}) {
                     >
                         By {user}
                     </Typography>
+
+                    
                 </Box>
+                
                <CardActionArea
                 onClick={() => {
                     navigate(`/articles/${article.id}`);

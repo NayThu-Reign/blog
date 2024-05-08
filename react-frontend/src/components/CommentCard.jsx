@@ -9,6 +9,9 @@ import {
     Button,
     ListItemIcon,
     ListItemText,
+    Menu,
+    MenuItem,
+    Avatar,
 } from "@mui/material";
 
 import {
@@ -23,40 +26,29 @@ import { format } from "date-fns";
 
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { useAuth } from "../providers/AuthProvider";
+import { useParams } from "react-router-dom";
 
 
 
 
-export default function ArticleCard({comment,
-focus}) {
+export default function CommentCard({comment,
+focus, remove, article }) {
+
     const navigate = useNavigate();
+    const { authUser } = useAuth();
+    const [ category, setCategory ] = useState([]);
     const [ showMenu, setShowMenu ] = useState(false);
     const [ menuPosition, setMenuPosition ] = useState(null);
-    // const [ category, setCategory ] = useState([]);
     const [ user, setUser ] = useState([]);
 
     const {pathname} = useLocation();
 
 
 
-    
-// const token = "2|JYTBHnzySEPkwZKAPIf9GeuM5Dei0JgVhfQEdZ9O667657b1";
 
     useEffect(() => {
-        // const fetchCategory = async () => {
-        //     try {
-        //         const api = "http://localhost:8000/api/categories";
-        //         const res = await fetch(`${api}/${article.category_id}`);
-        //         if(!res.ok) throw new Error("failed to fetch Category");
-
-        //         const data = await res.json();
-        //         setCategory(data.name);
-        //     } catch (error) {
-        //         console.error('Error fetching category:', error);
-        //         setCategory(null);
-        //     }
-        // };
-
+        
         const fetchUser = async () => {
             try {
                 const api = "http://localhost:8000/api/users";
@@ -71,22 +63,11 @@ focus}) {
             }
         };
 
-        // fetchCategory();
+
         fetchUser();
 
     }, [comment.user_id]);
-    // const formatDate = (dateString) => {
-    //     try {
-    //         const date = new Date(dateString);
-    //         if (isNaN(date.getTime())) {
-    //             return "Invalid Date";
-    //         }
-    //         return format(date, "MMM d, y");
-    //     } catch (error) {
-    //         console.error("Error formatting date:", error);
-    //         return "Invalid Date";
-    //     }
-    // };
+    
  
     
 
@@ -97,23 +78,71 @@ focus}) {
             sx={{ mb: 2, bgcolor: focus ?"article.background" : "transparent"}}
         >
             <CardContent>
-                {/* <Box>
-                    <Typography variant="h5">
-                        {article.title}
-                    </Typography>
-                </Box> */}
                 
-               <CardActionArea>
-                        <Typography
-                            sx={{
-                                py: 2,
-                                px: 1,
-                                fontSize: 13,
-                            }}
-                        >
-                            {comment.content}
-                        </Typography>
-               </CardActionArea>
+               <Box
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center"
+                }}
+               >
+                            <Typography
+                                sx={{
+                                    py: 2,
+                                    px: 1,
+                                    fontSize: 13,
+                                }}
+                            >
+                                {comment.content}
+                            </Typography>
+                                {authUser && authUser.id === comment.user_id && (
+                                    <Box>
+                                        <IconButton
+                                            onClick={e => {
+                                                setShowMenu(true);
+                                                setMenuPosition(e.currentTarget)
+                                            }}>
+                                            <MenuIcon />
+                                        </IconButton>
+                                        <Menu
+                                            anchorEl={menuPosition}
+                                            open={showMenu}
+                                            anchorOrigin={{
+                                                vertical: "top",
+                                                horizontal: "right",
+                                            }}
+                                            transformOrigin={{
+                                                vertical: "top",
+                                                horizontal: "right",
+                                            }}
+                                            onClose={() => {
+                                                setShowMenu(false);
+                                        }}>
+                                            <MenuItem
+                                                onClick={() => {
+                                                    const api = `http://localhost:8000/api/comments/delete/${comment.id}`;
+                                                    const token = localStorage.getItem("token");
+
+                                                    fetch(api, {
+                                                        method: "DELETE",
+                                                        headers: {
+                                                            "Content-Type": "application/json",
+                                                            Authorization: `Bearer ${token}`,
+                                                        },
+                                                    });
+
+                                                        remove(comment.id);
+                                                }}>
+                                                <ListItemIcon>
+                                                    <DeleteIcon  color="error"/>
+                                                </ListItemIcon>
+                                                <ListItemText primary="Delete" />
+                                            </MenuItem>
+                                        </Menu>
+                                    </Box>
+                                )}
+
+               </Box>
                <Box
                     sx={{
                         display: "flex",
@@ -121,20 +150,7 @@ focus}) {
                         gap: 1,
                     }}
                 >
-                    {/* <Typography
-                        sx={{
-                            fontSize: 12
-                        }}
-                    >
-                        • {format(article.created)}
-                    </Typography> */}
-                    {/* <Typography
-                        sx={{
-                            fontSize: 12
-                        }}
-                    >
-                        Category: {category},
-                    </Typography> */}
+                   
                     <Typography
                         sx={{
                             fontSize: 10
